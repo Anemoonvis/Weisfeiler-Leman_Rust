@@ -38,7 +38,7 @@ println!("1: {}, 2: {}, 3: {}, and: {}", hash1, hash2, hash3, hash4);
     - Use `invariant`, or if you want the algorithm to run for a specific number of iterations, use `invariant_iters`.
     - Alternatively, use the two-dimensional versions of these, `invariant_2wl` and `iter_2wl`, which offer greater distinguishing power—particularly for regular graphs—at the cost of a significant runtime penalty.
 - **Subgraph hashing**.  
-    - Obtain subgraph hashes for each node at each iteration for tasks like feature extraction in graph kernels.
+    - Obtain subgraph hashes for each node at each iteration for tasks like feature extraction for graph kernels.
     - Use `neighbourhood_hash` for a fixed number of iterations or `neighbourhood_stable` to run until stabilisation.
 - **Dot file output**.
     - Write the graph to a dot file, where the colour class of each node is visualised.

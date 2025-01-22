@@ -36,7 +36,7 @@
 //!     * Use [`invariant`](fn.invariant.html), or if you want the algorithm to run for a specific number of iterations, use [`invariant_iters`](fn.invariant_iters.html).
 //!     * Alternatively, use the two-dimensional versions of these, [`invariant_2wl`](fn.invariant_wl.html) and [`iter_2wl`](fn.iter_2wl.html), which offer greater distinguishing power—particularly for regular graphs—at the cost of a significant runtime penalty.
 //! * <b>Subgraph hashing </b>.  
-//!     * Obtain subgraph hashes for each node at each iteration for tasks like feature extraction in graph kernels.
+//!     * Obtain subgraph hashes for each node at each iteration for tasks like feature extraction for graph kernels.
 //!     * Use [`neighbourhood_hash`](fn.neighbourhood_hash.html) for a fixed number of iterations  or [`neighbourhood_stable`](fn.neighbourhood_stable.html) to run until stabilisation.
 //! * <b>Dot file output</b>.
 //!     * Write the graph to a dot file, where the colour class of each node is visualised.
