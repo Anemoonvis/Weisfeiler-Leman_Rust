@@ -90,7 +90,9 @@ pub fn iter_2wl<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize)
     wrap.get_results()
 }
 
-/// Generate the subgraph hashes per node per iteration. Can, for example, be used for feature extraction for graph kernels. The computed hash values give some information on the i-hop neighbourhood. The first hash, for example, gives some information on the neighbourhood of each node reachable within one hop. In this example, we see each has one neighbour:
+/// Generate the subgraph hashes per node per iteration. Can, for example, be used for feature extraction for graph kernels. The computed hash values give some information on the i-hop neighbourhood. The first hash, for example, gives some information on the neighbourhood of each node reachable within one hop. 
+/// 
+/// In this example, we see each has one neighbour:
 /// ```rust
 /// use ::petgraph::graph::UnGraph;
 ///
@@ -107,7 +109,7 @@ pub fn iter_2wl<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize)
 /// # assert_eq!(g1_hashes[1][2], g2_hashes[5][2]);
 /// # assert_ne!(g1_hashes[1][3], g2_hashes[5][3]);
 /// ```
-/// In this example, the neighbourhoods of nodes 1 from g1 and 5 from g5 appear isomorphic up to their 3-hop neighbourhoods, but once the fourth hop is considered you can see they are not.
+/// In this example, the neighbourhoods of nodes 1 from g1 and 5 from g2 appear isomorphic up to their 3-hop neighbourhoods, but once the fourth hop is considered you can see they are not.
 /// (NB: petgraph introduces an unconnected 0th node in this case, because it uses all node labels from 0 to the highest one indicated. Hence the indexing corresponds to the node's number.)
 pub fn neighbourhood_hash<E, Ty: EdgeType>(
     graph: Graph<u64, E, Ty>,
