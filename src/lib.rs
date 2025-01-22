@@ -38,10 +38,10 @@
 //! * <b>Subgraph hashing </b>.  
 //!     * Obtain subgraph hashes for each node at each iteration for tasks like feature extraction in graph kernels.
 //!     * Use [`neighbourhood_hash`](fn.neighbourhood_hash.html) for a fixed number of iterations  or [`neighbourhood_stable`](fn.neighbourhood_stable.html) to run until stabilisation.
-//! * <b>Dot file output</b>. 
-//!     * Write the graph to a dot file, where the colour class of each node is visualised. 
+//! * <b>Dot file output</b>.
+//!     * Write the graph to a dot file, where the colour class of each node is visualised.
 //!     * Use [`invariant_dot`](fn.invariant_dot.html) or [`iter_dot`](fn.iter_dot.html).
-//! * <b>Read from NetworkX edgelist file</b> 
+//! * <b>Read from NetworkX edgelist file</b>
 //!     * Load graphs from text files in the NetworkX edgelist format.
 //!     *  Use [`ungraph_from_edgelist`](fn.ungraph_from_edgelist.html) or [`digraph_from_edgelist`](fn.digraph_from_edgelist.html).
 //!
