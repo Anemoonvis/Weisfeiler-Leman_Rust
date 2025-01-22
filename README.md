@@ -1,6 +1,6 @@
 # Weisfeiler-Leman Graph Isomorphism
 
-This crate provides a implementation of the Weisfeiler-Leman (WL) graph isomorphism algorithm for [`petgraph`](https://docs.rs/petgraph/latest/petgraph/) graphs. WL is a sound but incomplete isomorphism test, that because of its speed is often used as a subroutine in complete tests and feature extraction for graph kernels.
+This crate provides a implementation of the Weisfeiler-Leman (WL) graph isomorphism algorithm for [`petgraph`](https://docs.rs/petgraph/latest/petgraph/) graphs. WL is a sound but incomplete isomorphism test, that because of its speed is often used as a subroutine in complete tests and feature extraction for graph kernels. Additionally, it includes an implementation of the two-dimensional version of the algorithm, which offers greater distinguishing power—particularly for regular graphs—at the cost of a significant runtime penalty.
 
 ## Basic Usage
 
@@ -23,7 +23,7 @@ println!("1: {}, 2: {}, 3: {}, and: {}", hash1, hash2, hash3, hash4);
 ```
 ## Important Notes
 
-- **TThe WL algorithm is not a complete isomorphism test.** This means that when the algorithm returns the same hash for two graphs, they are *possibly* isomorphic, but not guaranteed. On certain classes of graphs (such as random graphs) this is almost alwasy a good indicator of isomorphism, but it is for example not trustworthy on regular graphs. It is, however, a sound test, meaning that if the algorithm returns different hashes, the graphs are guaranteed to be non-isomorphic.
+- **The WL algorithm is not a complete isomorphism test.** This means that when the algorithm returns the same hash for two graphs, they are *possibly* isomorphic, but not guaranteed. On certain classes of graphs (such as random graphs) this is almost alwasy a good indicator of isomorphism, but it is for example not trustworthy on regular graphs. It is, however, a sound test, meaning that if the algorithm returns different hashes, the graphs are guaranteed to be non-isomorphic.
 - **Hash values depend on the number of iterations.** For algorithms with a fixed iteration count, even the same graph will yield different hashes for different iteration counts.
 - **Hash values depend on device endianness.** The same graph will produce different hashes on little-endian and big-endian systems. Compare hashes only on the same device or verify results using example graphs.
 
@@ -32,6 +32,7 @@ println!("1: {}, 2: {}, 3: {}, and: {}", hash1, hash2, hash3, hash4);
 - **Isomorphism testing**: 
   - Calculate a graph's hash to compare it with another graph's hash for potential isomorphism.
   - Use `invariant` for a complete run, or `invariant_iters` to specify the number of iterations.
+  - Alternatively, use the two-dimensional versions of these, `invariant_2wl` and `iter_2wl`, which offer greater distinguishing power—particularly for regular graphs—at the cost of a significant runtime penalty.
 
 - **Subgraph hashing**:
   - Obtain subgraph hashes at each iteration for tasks like feature extraction in graph kernels.
