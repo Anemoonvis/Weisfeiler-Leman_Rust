@@ -14,10 +14,10 @@
 //! let g2 = UnGraph::<u64, ()>::from_edges([(0,1), (1,2), (2,0), (0,3)]);
 //! let g3 = UnGraph::<u64, ()>::from_edges([(0,1), (1,2), (2,3), (0,3)]);
 //! let g4 = DiGraph::<u64, ()>::from_edges([(0,1), (1,2), (2,0), (2,3)]);
-//! let hash1 = wl::invariant(g1);
-//! let hash2 = wl::invariant(g2);
-//! let hash3 = wl::invariant(g3);
-//! let hash4 = wl::invariant(g4);
+//! let hash1 = wl_isomorphism::invariant(g1);
+//! let hash2 = wl_isomorphism::invariant(g2);
+//! let hash3 = wl_isomorphism::invariant(g3);
+//! let hash4 = wl_isomorphism::invariant(g4);
 //! println!("The final hashes (u64) are:");
 //! println!("1: {}, 2: {}, 3: {}, and: {}", hash1, hash2, hash3, hash4);
 //! // 1: 16339153988175251892, 2: 16339153988175251892, 3: 14961629621624962419, and: 15573326168912649736
@@ -98,8 +98,8 @@ pub fn iter_2wl<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize)
 ///
 /// let g1 = UnGraph::<u64, ()>::from_edges([(1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)]);
 /// let g2 = UnGraph::<u64, ()>::from_edges([(1, 3), (2, 3), (1, 6), (1, 5), (4, 6)]);
-/// let g1_hashes = wl::neighbourhood_hash(g1.clone(), 4);
-/// let g2_hashes = wl::neighbourhood_hash(g2.clone(), 4);
+/// let g1_hashes = wl_isomorphism::neighbourhood_hash(g1.clone(), 4);
+/// let g2_hashes = wl_isomorphism::neighbourhood_hash(g2.clone(), 4);
 /// println!("{:?}", g1_hashes[1]);
 /// // [1, 1442927345519261537, 353516931035902801, 4661792571936206109]
 /// println!("{:?}", g2_hashes[5]);

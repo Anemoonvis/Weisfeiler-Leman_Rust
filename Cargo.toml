@@ -1,5 +1,5 @@
 [package]
-name = "wl"
+name = "wl_isomorphism"
 version = "0.1.0"
 edition = "2021"
 licence = "MIT"
