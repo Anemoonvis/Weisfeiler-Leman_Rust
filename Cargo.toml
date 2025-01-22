@@ -2,7 +2,7 @@
 name = "wl_isomorphism"
 version = "0.1.0"
 edition = "2021"
-licence = "MIT"
+license = "MIT"
 description = "Implementation of the WL and 2-WL algorithms for graph isomorphism testing"
 readme = "README.md"
 repository = "https://github.com/Anemoonvis/Weisfeiler-Leman_Rust"
