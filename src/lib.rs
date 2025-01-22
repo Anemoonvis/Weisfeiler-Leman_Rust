@@ -1,8 +1,7 @@
 //! # Weisfeiler-Leman Graph Isomorphism
 //!
-//! This crate provides a implementation of the Weisfeiler-Leman (WL) graph isomorphism algorithm for [`petgraph`](https://docs.rs/petgraph/latest/petgraph/) graphs.
-//! WL is a sound but incomplete isomorphism test, that because of its speed is often used as a subroutine in complete tests and
-//! feature extraction for graph kernels.
+//! This crate provides an implementation of the Weisfeiler-Leman (WL) graph isomorphism algorithm for [`petgraph`](https://docs.rs/petgraph/latest/petgraph/) graphs.
+//! WL is a sound but incomplete isomorphism test, that because of its speed is often used as a subroutine in complete tests and feature extraction for graph kernels. Additionally, it includes an implementation of the two-dimensional version of the algorithm, which offers greater distinguishing power—particularly for regular graphs—at the cost of a significant runtime penalty.
 //!
 //! # Example
 //!
@@ -27,15 +26,24 @@
 //! # assert_ne!(hash1, hash4);
 //! ```
 //! # IMPORTANT
-//! * <b> The WL algorithm is not a complete isomorphism test</b>. This means that when the algorithm returns the same hash for two graphs, they are *possibly* isomorphic, but not guaranteed. On certain classes of graphs (such as random graphs) this is almost alwasy a good indicator of isomorphism, but it is for example not trustworthy on random graphs. It is, however, a sound test, meaning that if the algorithm returns different hashes, the graphs are guaranteed to be non-isomorphic.
-//! * <b> The produced hash depends on the number of iterations</b>. If you use a version of the algorithm with a set number of iterations, even the exact same graph will produce different hashes after a different number of iterations.
-//! * <b> The produced hash depends on the device's endianness</b>. In this implementaiton, little-endian and big-endian devices will produce different hashes. Therefore we recommend only comparing hashes on the same device, or testing the results on some example graphs.
+//! * <b> The WL algorithm is not a complete isomorphism test</b>. This means that when the algorithm returns the same hash for two graphs, they are *possibly* isomorphic, but not guaranteed. On certain classes of graphs (such as random graphs) this is almost always a good indicator of isomorphism, but it is for example not trustworthy on regular graphs. It is, however, a *sound* test, meaning that if the algorithm returns different hashes, the graphs are guaranteed to be non-isomorphic.
+//! * <b> Hash values depend on the number of iterations</b>. For algorithms with a fixed iteration count, even the same graph will yield different hashes for different iteration counts.
+//! * <b> Hash values depend on device endianness</b>. The same graph will produce different hashes on little-endian and big-endian systems. Compare hashes only on the same device or verify results using example graphs.
 //!
 //! # Features
-//! * <b>Isomorphism testing</b>.   Calculate a final hash of a graph that can be compared to the hash of another graph to determine if they are isomorphic.   Use [`invariant`](fn.invariant.html), or if you want the algorithm to run for a specific number of iterations, use [`invariant_iters`](fn.invariant_iters.html).
-//! * <b>Subgraph hashing </b>.  Get the hashes of the subgraphs of a graph at each iteration. Can be used e.g. for feature extraction for graph kernels. [`neighbourhood_hash`](fn.neighbourhood_hash.html) runs for a set number of iterations. [`neighbourhood_stable`](fn.neighbourhood_stable.html) runs until stabilisation of WL.
-//! * <b>Dot file output</b>. Write the graph to a dot file, where the colour class of each node is visualised. Use [`invariant_dot`](fn.invariant_dot.html) or [`iter_dot`](fn.iter_dot.html).
-//! * <b>Read from NetworkX edgelist file</b> Convenience functionality to read a graph from a txt file in the format of a NetworkX edgelist. Use [`ungraph_from_edgelist`](fn.ungraph_from_edgelist.html) or [`digraph_from_edgelist`](fn.digraph_from_edgelist.html).
+//! * <b>Isomorphism testing</b>.  
+//!     * Calculate a graph's hash to compare it with other graphs' hashes to determine if they are isomorphic.  
+//!     * Use [`invariant`](fn.invariant.html), or if you want the algorithm to run for a specific number of iterations, use [`invariant_iters`](fn.invariant_iters.html).
+//!     * Alternatively, use the two-dimensional versions of these, [`invariant_2wl`](fn.invariant_wl.html) and [`iter_2wl`](fn.iter_2wl.html), which offer greater distinguishing power—particularly for regular graphs—at the cost of a significant runtime penalty.
+//! * <b>Subgraph hashing </b>.  
+//!     * Obtain subgraph hashes for each node at each iteration for tasks like feature extraction in graph kernels.
+//!     * Use [`neighbourhood_hash`](fn.neighbourhood_hash.html) for a fixed number of iterations  or [`neighbourhood_stable`](fn.neighbourhood_stable.html) to run until stabilisation.
+//! * <b>Dot file output</b>. 
+//!     * Write the graph to a dot file, where the colour class of each node is visualised. 
+//!     * Use [`invariant_dot`](fn.invariant_dot.html) or [`iter_dot`](fn.iter_dot.html).
+//! * <b>Read from NetworkX edgelist file</b> 
+//!     * Load graphs from text files in the NetworkX edgelist format.
+//!     *  Use [`ungraph_from_edgelist`](fn.ungraph_from_edgelist.html) or [`digraph_from_edgelist`](fn.digraph_from_edgelist.html).
 //!
 
 mod graphwrapper; // Declare the graphwrapper module.
@@ -57,7 +65,7 @@ pub fn invariant<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>) -> u64 
     wrap.get_results()
 }
 
-/// Calculate the graph invariant using 2-dimensional WL. Automatically stabilises. This is an implementation of '2-FWL'. This more expressive than 1-dimensional WL, but much slower. Therefore only use this on graph classes where our default [`invariant`](fn.invariant.html) does not work well.
+/// Calculate the graph invariant using 2-dimensional WL. Automatically stabilises. This is an implementation of '2-FWL'. This is more expressive than 1-dimensional WL, but much slower. Therefore only use this on graph classes where our default [`invariant`](fn.invariant.html) does not work well.
 pub fn invariant_2wl<N: Ord, E: Debug>(graph: Graph<N, E, Undirected>) -> u64 {
     let mut wrap: GraphWrapper<N, E, Undirected, TwoWL> =
         GraphWrapper::new_2wl(graph, 42, 0, true, false);
@@ -65,7 +73,7 @@ pub fn invariant_2wl<N: Ord, E: Debug>(graph: Graph<N, E, Undirected>) -> u64 {
     wrap.get_results()
 }
 
-/// Calculate the graph invariant using 1-dimensional WL. Runs for `n_iters`. Regular graphs tend to need at most 3 iterations for stabilisation, but for example random trees significantly more. We recommend using [`invariant`](fn.invariant.html) for optimal results if you don't require a specific number of iterations.
+/// Calculate the graph invariant using 1-dimensional WL. Runs for `n_iters`. Regular graphs tend to need at most 3 iterations for stabilisation, but for example random trees significantly more. We recommend using [`invariant`](fn.invariant.html) for optimal results, if you don't require a specific number of iterations.
 pub fn invariant_iters<N: Ord, E: Debug, Ty: EdgeType>(
     graph: Graph<N, E, Ty>,
     n_iters: usize,
@@ -82,7 +90,7 @@ pub fn iter_2wl<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters:
     wrap.get_results()
 }
 
-/// Generate the subgraph hashes per node per iteration. Can, for example, be used for feature extraction for graph kernels. The computed hash values give some information on the i-hop neighbourhood. The first hash for example gives some information on the neighbourhood of each node reachable within one hop. In this example, we see each has one neighbour:
+/// Generate the subgraph hashes per node per iteration. Can, for example, be used for feature extraction for graph kernels. The computed hash values give some information on the i-hop neighbourhood. The first hash, for example, gives some information on the neighbourhood of each node reachable within one hop. In this example, we see each has one neighbour:
 /// ```rust
 /// use ::petgraph::graph::UnGraph;
 ///
@@ -110,7 +118,7 @@ pub fn neighbourhood_hash<E: Debug, Ty: EdgeType>(
     wrap.subgraphs.unwrap()
 }
 
-/// Like [`neighbourhood_hash`](fn.neighbourhood_hash.html), but instead calculated until stability is achieved. (Note that we do not return the last calulated hashes, as these do not provide any new information: they are stable in respect to the last ones that áre returned.)
+/// Like [`neighbourhood_hash`](fn.neighbourhood_hash.html), but instead calculated until stability is achieved. (Note that we do not return the last calulated hashes, as these do not provide any new information: they are stable with respect to the last ones that áre returned.)
 pub fn neighbourhood_stable<N: Ord, E: Debug, Ty: EdgeType>(
     graph: Graph<N, E, Ty>,
 ) -> Vec<Vec<u64>> {
@@ -119,7 +127,7 @@ pub fn neighbourhood_stable<N: Ord, E: Debug, Ty: EdgeType>(
     wrap.subgraphs.unwrap()
 }
 
-/// Like [`invariant`](fn.invariant.html) but it additionally writes the graph with the final colouring in dot format to `path`.
+/// Like [`invariant`](fn.invariant.html), but it additionally writes the graph with the final colouring in dot format to `path`.
 pub fn invariant_dot<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>, path: &str) -> u64 {
     let mut wrap = GraphWrapper::new(graph, 42, 0, true, false);
     wrap.run();
@@ -127,7 +135,7 @@ pub fn invariant_dot<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>, pat
     wrap.get_results()
 }
 
-/// Like [`invariant_iters`](fn.invariant_iters.html) but it additionally writes the graph with the final colouring in dot format to `path`.
+/// Like [`invariant_iters`](fn.invariant_iters.html), but it additionally writes the graph with the final colouring in dot format to `path`.
 pub fn iter_dot<E: Debug, Ty: EdgeType>(
     graph: Graph<u64, E, Ty>,
     n_iters: usize,
@@ -139,7 +147,7 @@ pub fn iter_dot<E: Debug, Ty: EdgeType>(
     wrap.get_results()
 }
 
-/// Read an undirected graph from a text file, as produced by [`Networkx.write_edgelist`](https://networkx.org/documentation/stable/reference/readwrite/generated/networkx.readwrite.edgelist.write_edgelist.html). Note that this does not support weights and that if the edgelist skips certain indices, petgraph will infer an unconnected node at that index.
+/// Read an undirected graph from a text file, as produced by [`Networkx.write_edgelist`](https://networkx.org/documentation/stable/reference/readwrite/generated/networkx.readwrite.edgelist.write_edgelist.html). Note that this does not support weights and that if the edgelist skips certain indices, petgraph will infer unconnected nodes at said indices.
 pub fn ungraph_from_edgelist(path: &str) -> UnGraph<(), ()> {
     UnGraph::<(), ()>::from_edges(read_edges(path))
 }
