@@ -51,9 +51,9 @@ where
     seed: u64,
     labels: Vec<u64>,
     new_labels: Vec<u64>, // To store newly calculated labels (cannot be done in place)
-    niters: usize,             // After how many iterations to terminate
-    check_stable: bool,        // Whether to terminate once the colouring becomes stable
-    get_subgraphs: bool,       // Whether to store the subgraph hashes
+    niters: usize,        // After how many iterations to terminate
+    check_stable: bool,   // Whether to terminate once the colouring becomes stable
+    get_subgraphs: bool,  // Whether to store the subgraph hashes
     pub subgraphs: Option<Vec<Vec<u64>>>, // In case we're doing subgraph hashing
     _dim: std::marker::PhantomData<Wd>, // Marker for the WL dimension
 }

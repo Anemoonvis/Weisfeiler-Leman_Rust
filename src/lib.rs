@@ -74,10 +74,7 @@ pub fn invariant_2wl<N: Ord, E>(graph: Graph<N, E, Undirected>) -> u64 {
 }
 
 /// Calculate the graph invariant using 1-dimensional WL. Runs for `n_iters`. Regular graphs tend to need at most 3 iterations for stabilisation, but for example random trees significantly more. We recommend using [`invariant`](fn.invariant.html) for optimal results, if you don't require a specific number of iterations.
-pub fn invariant_iters<N: Ord, E, Ty: EdgeType>(
-    graph: Graph<N, E, Ty>,
-    n_iters: usize,
-) -> u64 {
+pub fn invariant_iters<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize) -> u64 {
     let mut wrap = GraphWrapper::new(graph, 42, n_iters, false, false);
     wrap.run();
     wrap.get_results()
@@ -90,8 +87,8 @@ pub fn iter_2wl<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize)
     wrap.get_results()
 }
 
-/// Generate the subgraph hashes per node per iteration. Can, for example, be used for feature extraction for graph kernels. The computed hash values give some information on the i-hop neighbourhood. The first hash, for example, gives some information on the neighbourhood of each node reachable within one hop. 
-/// 
+/// Generate the subgraph hashes per node per iteration. Can, for example, be used for feature extraction for graph kernels. The computed hash values give some information on the i-hop neighbourhood. The first hash, for example, gives some information on the neighbourhood of each node reachable within one hop.
+///
 /// In this example, we see each has one neighbour:
 /// ```rust
 /// use ::petgraph::graph::UnGraph;
@@ -121,9 +118,7 @@ pub fn neighbourhood_hash<E, Ty: EdgeType>(
 }
 
 /// Like [`neighbourhood_hash`](fn.neighbourhood_hash.html), but instead calculated until stability is achieved. (Note that we do not return the last calulated hashes, as these do not provide any new information: they are stable with respect to the last ones that áre returned.)
-pub fn neighbourhood_stable<N: Ord, E, Ty: EdgeType>(
-    graph: Graph<N, E, Ty>,
-) -> Vec<Vec<u64>> {
+pub fn neighbourhood_stable<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>) -> Vec<Vec<u64>> {
     let mut wrap = GraphWrapper::new(graph, 42, 0, true, true);
     wrap.run();
     wrap.subgraphs.unwrap()

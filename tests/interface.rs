@@ -4,7 +4,10 @@ use petgraph::graph::UnGraph;
 fn equal() {
     let g = UnGraph::<u64, ()>::from_edges([(0, 1), (1, 2), (2, 3), (3, 4)]);
     let g2 = UnGraph::<u64, ()>::from_edges([(1, 0), (2, 1), (2, 3), (4, 3)]);
-    assert_eq!(wl_isomorphism::invariant(g.clone()), wl_isomorphism::invariant(g2.clone()));
+    assert_eq!(
+        wl_isomorphism::invariant(g.clone()),
+        wl_isomorphism::invariant(g2.clone())
+    );
     assert_eq!(
         wl_isomorphism::invariant_iters(g.clone(), 2),
         wl_isomorphism::invariant_iters(g2.clone(), 2)
@@ -20,7 +23,10 @@ fn equal() {
 #[test]
 fn unequal_iters() {
     let g = UnGraph::<u64, ()>::from_edges([(0, 1), (1, 2), (2, 3), (3, 4)]);
-    assert_ne!(wl_isomorphism::invariant(g.clone()), wl_isomorphism::invariant_iters(g.clone(), 5));
+    assert_ne!(
+        wl_isomorphism::invariant(g.clone()),
+        wl_isomorphism::invariant_iters(g.clone(), 5)
+    );
     let n_hash = wl_isomorphism::neighbourhood_hash(g.clone(), 1);
     let n_hash2 = wl_isomorphism::neighbourhood_hash(g.clone(), 4);
     let n_hash_stable = wl_isomorphism::neighbourhood_stable(g.clone());
@@ -32,7 +38,10 @@ fn unequal_iters() {
 #[test]
 fn equal_versions() {
     let g = UnGraph::<u64, ()>::from_edges([(0, 1), (1, 2), (2, 3), (3, 4)]);
-    assert_eq!(wl_isomorphism::invariant(g.clone()), wl_isomorphism::invariant_iters(g.clone(), 2));
+    assert_eq!(
+        wl_isomorphism::invariant(g.clone()),
+        wl_isomorphism::invariant_iters(g.clone(), 2)
+    );
     let n_hash = wl_isomorphism::neighbourhood_hash(g.clone(), 2);
     let n_hash2 = wl_isomorphism::neighbourhood_hash(g.clone(), 2);
     let n_hash_stable = wl_isomorphism::neighbourhood_stable(g.clone());
