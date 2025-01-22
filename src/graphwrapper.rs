@@ -4,7 +4,6 @@ use petgraph::graph::NodeIndex;
 //use petgraph::graph::NodeIndex;
 use petgraph::Graph;
 use std::collections::HashMap;
-use std::vec;
 use twox_hash::{xxhash64, XxHash64};
 
 // Petgraph types
@@ -45,18 +44,17 @@ impl WLdim for TwoWL {}
 pub struct GraphWrapper<N, E, Ty, Wd>
 where
     N: std::cmp::Ord, // Nodeweight
-    E: Debug,         // Edgeweight
     Ty: EdgeType,     // Directed or undirected
     Wd: WLdim,
 {
     pub graph: Graph<N, E, Ty>,
     seed: u64,
-    labels: vec::Vec<u64>,
-    new_labels: vec::Vec<u64>, // To store newly calculated labels (cannot be done in place)
-    niters: usize,             // After how many iterations to terminate
-    check_stable: bool,        // Whether to terminate once the colouring becomes stable
-    get_subgraphs: bool,       // Whether to store the subgraph hashes
-    pub subgraphs: Option<vec::Vec<vec::Vec<u64>>>, // In case we're doing subgraph hashing
+    labels: Vec<u64>,
+    new_labels: Vec<u64>, // To store newly calculated labels (cannot be done in place)
+    niters: usize,        // After how many iterations to terminate
+    check_stable: bool,   // Whether to terminate once the colouring becomes stable
+    get_subgraphs: bool,  // Whether to store the subgraph hashes
+    pub subgraphs: Option<Vec<Vec<u64>>>, // In case we're doing subgraph hashing
     _dim: std::marker::PhantomData<Wd>, // Marker for the WL dimension
 }
 
@@ -64,7 +62,6 @@ where
 impl<N, E, Ty> GraphWrapper<N, E, Ty, OneWL>
 where
     N: std::cmp::Ord,
-    E: Debug,
     Ty: EdgeType,
 {
     // Make a new wrapper based on the input graph
@@ -112,57 +109,6 @@ where
             }
             self.update_graph();
         }
-    }
-
-    // Get a hashmap that translates labels (hashes) to associated colours:
-    // find the unique labels, get the same number of contrasting colours and finally zip that into a hashmap
-    fn get_colour_map(&self) -> HashMap<&u64, String> {
-        let unique_hashes: Vec<_> = HashSet::<_>::from_iter(self.labels.iter())
-            .into_iter()
-            .collect();
-
-        let hash_to_colour = if unique_hashes.len() > 8 {
-            // Map hashes to numbers
-            unique_hashes
-                .iter()
-                .enumerate()
-                .map(|(i, &hash)| (hash, format!("label = {}", i)))
-                .collect()
-        } else {
-            // Map hashes to contrasting colors
-            let colours = generate_contrasting_colors(unique_hashes.len()).map(|c| {
-                format!(
-                    "style = filled fillcolor= \"#{:02X}{:02X}{:02X}\"",
-                    c.red, c.green, c.blue
-                )
-            });
-
-            unique_hashes.iter().copied().zip(colours).collect()
-        };
-
-        hash_to_colour
-    }
-
-    // Write the final graph to a dot file, with colouring of the nodes based on what colour class they are in
-    pub fn write_dot(&self, path: &str) {
-        let hash_to_colour = self.get_colour_map();
-
-        // get a new graph with the colour strings as weights
-        let graph = self.graph.map(
-            |index, _weight| hash_to_colour[&self.labels[index.index()]].clone(), // Get the colour that belongs to the hash
-            |_index, weight| weight, // For edges, simply return the input weight
-        );
-
-        // Create a file, create a Dot formatter from petgraph and write that to the file
-        let mut f = File::create(path).expect("failed to create the dot file");
-        let dot = Dot::with_attr_getters(
-            &graph,
-            &[Config::NodeIndexLabel, Config::EdgeNoLabel],
-            &|_graph, _edge| String::new(),
-            &|_graph, node| node.1.to_string(),
-        );
-        f.write_all(format!("{:?}", dot).as_bytes())
-            .expect("failed to write from input to file");
     }
 
     // Get the labels for the next iteration based on the current state
@@ -224,6 +170,65 @@ where
     }
 }
 
+// Implementations specifically for writing it to dotfile, this requires debug.
+impl<N, E, Ty> GraphWrapper<N, E, Ty, OneWL>
+where
+    N: std::cmp::Ord,
+    E: Debug,
+    Ty: EdgeType,
+{
+    // Write the final graph to a dot file, with colouring of the nodes based on what colour class they are in
+    pub fn write_dot(&self, path: &str) {
+        let hash_to_colour = self.get_colour_map();
+
+        // get a new graph with the colour strings as weights
+        let graph = self.graph.map(
+            |index, _weight| hash_to_colour[&self.labels[index.index()]].clone(), // Get the colour that belongs to the hash
+            |_index, weight| weight, // For edges, simply return the input weight
+        );
+
+        // Create a file, create a Dot formatter from petgraph and write that to the file
+        let mut f = File::create(path).expect("failed to create the dot file");
+        let dot = Dot::with_attr_getters(
+            &graph,
+            &[Config::NodeIndexLabel, Config::EdgeNoLabel],
+            &|_graph, _edge| String::new(),
+            &|_graph, node| node.1.to_string(),
+        );
+        f.write_all(format!("{:?}", dot).as_bytes())
+            .expect("failed to write from input to file");
+    }
+
+    // Get a hashmap that translates labels (hashes) to associated colours:
+    // find the unique labels, get the same number of contrasting colours and finally zip that into a hashmap
+    fn get_colour_map(&self) -> HashMap<&u64, String> {
+        let unique_hashes: Vec<_> = HashSet::<_>::from_iter(self.labels.iter())
+            .into_iter()
+            .collect();
+
+        let hash_to_colour = if unique_hashes.len() > 8 {
+            // Map hashes to numbers
+            unique_hashes
+                .iter()
+                .enumerate()
+                .map(|(i, &hash)| (hash, format!("label = {}", i)))
+                .collect()
+        } else {
+            // Map hashes to contrasting colors
+            let colours = generate_contrasting_colors(unique_hashes.len()).map(|c| {
+                format!(
+                    "style = filled fillcolor= \"#{:02X}{:02X}{:02X}\"",
+                    c.red, c.green, c.blue
+                )
+            });
+
+            unique_hashes.iter().copied().zip(colours).collect()
+        };
+
+        hash_to_colour
+    }
+}
+
 // Get colours that are as opposing as possible
 fn generate_contrasting_colors(n: usize) -> impl Iterator<Item = Srgb<u8>> {
     (0..n).map(move |i| {
@@ -238,7 +243,6 @@ fn generate_contrasting_colors(n: usize) -> impl Iterator<Item = Srgb<u8>> {
 impl<N, E, Ty> GraphWrapper<N, E, Ty, TwoWL>
 where
     N: std::cmp::Ord,
-    E: Debug,
     Ty: EdgeType,
 {
     // Make a new wrapper based on the input graph
@@ -348,7 +352,6 @@ fn get_label_index(mut left: usize, mut right: usize) -> usize {
 impl<N, E, Ty, Wd> GraphWrapper<N, E, Ty, Wd>
 where
     N: std::cmp::Ord,
-    E: Debug,
     Ty: EdgeType,
     Wd: WLdim,
 {

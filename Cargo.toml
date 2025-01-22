@@ -1,7 +1,13 @@
 [package]
-name = "wl"
+name = "wl_isomorphism"
 version = "0.1.0"
 edition = "2021"
+licence = "MIT"
+description = "Implementation of the WL and 2-WL algorithms for graph isomorphism testing"
+readme = "README.md"
+repository = "https://github.com/Anemoonvis/Weisfeiler-Leman_Rust"
+keywords = ["isomorphism", "Weisfeiler-Leman", "graph", "heuristic"]
+
 
 [dependencies]
 twox-hash = "2.0.1"
