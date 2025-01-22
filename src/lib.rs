@@ -110,7 +110,6 @@ pub fn neighbourhood_hash<E: Debug, Ty: EdgeType>(
     wrap.subgraphs.unwrap()
 }
 
-
 /// Like [`neighbourhood_hash`](fn.neighbourhood_hash.html), but instead calculated until stability is achieved. (Note that we do not return the last calulated hashes, as these do not provide any new information: they are stable in respect to the last ones that áre returned.)
 pub fn neighbourhood_stable<N: Ord, E: Debug, Ty: EdgeType>(
     graph: Graph<N, E, Ty>,
