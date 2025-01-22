@@ -1,0 +1,2 @@
+This ensures the outputs folder gets pushed to git. 
+This is necessary for succesful execution writing to dotfiles.

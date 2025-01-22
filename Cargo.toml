@@ -1,0 +1,10 @@
+[package]
+name = "wl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+twox-hash = "2.0.1"
+petgraph = "0.6.5" 
+bytemuck = "1.19.0"
+palette = "0.7.6" 
