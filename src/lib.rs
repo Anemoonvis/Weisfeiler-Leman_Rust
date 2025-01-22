@@ -59,14 +59,14 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 /// Calculate the graph invariant using 1-dimensional WL. Automatically stabilises. On graph classes like regular graphs, it is better to use [`invariant_2wl`](fn.invariant_2wl.html), which is more expressive but slower.
-pub fn invariant<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>) -> u64 {
+pub fn invariant<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>) -> u64 {
     let mut wrap: GraphWrapper<N, E, Ty, OneWL> = GraphWrapper::new(graph, 42, 0, true, false);
     wrap.run();
     wrap.get_results()
 }
 
 /// Calculate the graph invariant using 2-dimensional WL. Automatically stabilises. This is an implementation of '2-FWL'. This is more expressive than 1-dimensional WL, but much slower. Therefore only use this on graph classes where our default [`invariant`](fn.invariant.html) does not work well.
-pub fn invariant_2wl<N: Ord, E: Debug>(graph: Graph<N, E, Undirected>) -> u64 {
+pub fn invariant_2wl<N: Ord, E>(graph: Graph<N, E, Undirected>) -> u64 {
     let mut wrap: GraphWrapper<N, E, Undirected, TwoWL> =
         GraphWrapper::new_2wl(graph, 42, 0, true, false);
     wrap.run();
@@ -74,7 +74,7 @@ pub fn invariant_2wl<N: Ord, E: Debug>(graph: Graph<N, E, Undirected>) -> u64 {
 }
 
 /// Calculate the graph invariant using 1-dimensional WL. Runs for `n_iters`. Regular graphs tend to need at most 3 iterations for stabilisation, but for example random trees significantly more. We recommend using [`invariant`](fn.invariant.html) for optimal results, if you don't require a specific number of iterations.
-pub fn invariant_iters<N: Ord, E: Debug, Ty: EdgeType>(
+pub fn invariant_iters<N: Ord, E, Ty: EdgeType>(
     graph: Graph<N, E, Ty>,
     n_iters: usize,
 ) -> u64 {
@@ -84,7 +84,7 @@ pub fn invariant_iters<N: Ord, E: Debug, Ty: EdgeType>(
 }
 
 /// Calculate the graph invariant using 2-dimensional WL. Runs for `n_iters`. We recommend using [`invariant_2wl`](fn.invariant_2wl.html) for optimal results if you don't require a specific number of iterations.
-pub fn iter_2wl<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize) -> u64 {
+pub fn iter_2wl<N: Ord, E, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters: usize) -> u64 {
     let mut wrap = GraphWrapper::new_2wl(graph, 42, n_iters, false, false);
     wrap.run();
     wrap.get_results()
@@ -109,7 +109,7 @@ pub fn iter_2wl<N: Ord, E: Debug, Ty: EdgeType>(graph: Graph<N, E, Ty>, n_iters:
 /// ```
 /// In this example, the neighbourhoods of nodes 1 from g1 and 5 from g5 appear isomorphic up to their 3-hop neighbourhoods, but once the fourth hop is considered you can see they are not.
 /// (NB: petgraph introduces an unconnected 0th node in this case, because it uses all node labels from 0 to the highest one indicated. Hence the indexing corresponds to the node's number.)
-pub fn neighbourhood_hash<E: Debug, Ty: EdgeType>(
+pub fn neighbourhood_hash<E, Ty: EdgeType>(
     graph: Graph<u64, E, Ty>,
     n_iters: usize,
 ) -> Vec<Vec<u64>> {
@@ -119,7 +119,7 @@ pub fn neighbourhood_hash<E: Debug, Ty: EdgeType>(
 }
 
 /// Like [`neighbourhood_hash`](fn.neighbourhood_hash.html), but instead calculated until stability is achieved. (Note that we do not return the last calulated hashes, as these do not provide any new information: they are stable with respect to the last ones that áre returned.)
-pub fn neighbourhood_stable<N: Ord, E: Debug, Ty: EdgeType>(
+pub fn neighbourhood_stable<N: Ord, E, Ty: EdgeType>(
     graph: Graph<N, E, Ty>,
 ) -> Vec<Vec<u64>> {
     let mut wrap = GraphWrapper::new(graph, 42, 0, true, true);
